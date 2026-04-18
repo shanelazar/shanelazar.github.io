@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shane Lazar — Data Analyst & Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020408;
+    --bg2: #050d14;
+    --cyan: #00f5ff;
+    --magenta: #ff00c8;
+    --purple: #7b2fff;
+    --green: #00ff88;
+    --text: #c8e0e8;
+    --dim: #3a5060;
+    --card: rgba(0,245,255,0.04);
+    --border: rgba(0,245,255,0.15);
+    --glow: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.15);
+    --glow-m: 0 0 20px rgba(255,0,200,0.4), 0 0 60px rgba(255,0,200,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ─── CUSTOM CURSOR ─── */
+  #cursor {
+    width: 12px; height: 12px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    box-shadow: var(--glow);
+    transition: transform 0.1s, background 0.2s;
+    transform: translate(-50%,-50%);
+  }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,245,255,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all 0.12s ease;
+  }
+
+  /* ─── SCANLINES OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none; z-index: 1000;
+  }
+
+  /* ─── GRID BACKGROUND ─── */
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(2,4,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--cyan);
+    text-shadow: var(--glow);
+    letter-spacing: 3px;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--dim);
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--cyan);
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .nav-links a:hover { color: var(--cyan); text-shadow: var(--glow); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    padding: 120px 10vw;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 10vw;
+    overflow: hidden;
+  }
+  .hero-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .hero-name {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.95;
+    color: #fff;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s forwards;
+  }
+  .hero-name span {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--cyan);
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(0,245,255,0.5));
+  }
+  .hero-tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(0.75rem, 1.5vw, 1rem);
+    color: var(--magenta);
+    letter-spacing: 3px;
+    margin-top: 24px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+    text-shadow: var(--glow-m);
+  }
+  .hero-cta {
+    margin-top: 48px;
+    display: flex; gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.9s 1.1s forwards;
+  }
+  .btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border: 1px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--cyan);
+    transform: translateX(-101%);
+    transition: transform 0.3s;
+    z-index: -1;
+  }
+  .btn:hover { color: #000; }
+  .btn:hover::before { transform: translateX(0); }
+  .btn-ghost {
+    border-color: var(--dim);
+    color: var(--dim);
+  }
+  .btn-ghost::before { background: var(--dim); }
+  .btn-ghost:hover { color: #000; }
+
+  /* ─── GLITCH DECORATION ─── */
+  .hero-glitch {
+    position: absolute;
+    right: 8vw; top: 50%;
+    transform: translateY(-50%);
+    width: 340px; height: 340px;
+    opacity: 0.12;
+    animation: fadeUp 1s 1.5s forwards, spin 40s linear infinite;
+  }
+  .hero-glitch::before, .hero-glitch::after {
+    content: 'SL';
+    font-family: 'Orbitron', monospace;
+    font-size: 280px;
+    font-weight: 900;
+    position: absolute;
+    top: 0; left: 0;
+    color: var(--cyan);
+  }
+  .hero-glitch::after {
+    color: var(--magenta);
+    top: 4px; left: 4px;
+    opacity: 0.5;
+  }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-header {
+    margin-bottom: 64px;
+  }
+  .section-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .section-title em {
+    font-style: normal;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--cyan);
+    filter: drop-shadow(0 0 15px rgba(0,245,255,0.4));
+  }
+  .section-line {
+    width: 80px; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    margin-top: 20px;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* ─── ABOUT ─── */
+  #about { background: linear-gradient(135deg, var(--bg) 60%, rgba(0,245,255,0.02)); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-visual {
+    position: relative;
+    height: 380px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-hex {
+    width: 240px; height: 240px;
+    border: 2px solid var(--cyan);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,245,255,0.05);
+    box-shadow: var(--glow), inset 0 0 40px rgba(0,245,255,0.05);
+    position: relative;
+    animation: pulse 4s ease-in-out infinite;
+  }
+  .about-hex-inner {
+    font-family: 'Orbitron', monospace;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: var(--glow);
+  }
+  .about-hex::before {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    border: 1px solid rgba(0,245,255,0.15);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    animation: spin 20s linear infinite;
+  }
+  .about-hex::after {
+    content: '';
+    position: absolute;
+    width: 320px; height: 320px;
+    border: 1px dashed rgba(255,0,200,0.1);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    animation: spin 35s linear infinite reverse;
+  }
+  .about-text p {
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.9;
+  }
+  .about-stats {
+    display: flex; gap: 40px;
+    margin-top: 32px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: var(--glow);
+    display: block;
+  }
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  /* ─── SKILLS ─── */
+  #skills { background: var(--bg2); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    transform-style: preserve-3d;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--magenta));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .skill-card:hover {
+    transform: translateY(-6px) rotateX(2deg);
+    box-shadow: var(--glow);
+    border-color: var(--cyan);
+  }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-icon {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+  .skill-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .skill-desc {
+    font-size: 0.9rem;
+    color: var(--dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .skill-bar-wrap {
+    margin-top: 16px;
+    height: 3px;
+    background: rgba(0,245,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    box-shadow: 0 0 8px var(--cyan);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .skill-bar.animate { transform: scaleX(1); }
+
+  /* ─── PROJECTS ─── */
+  #projects { background: var(--bg); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+  }
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s, box-shadow 0.4s;
+    cursor: none;
+  }
+  .project-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0,245,255,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .project-card:hover {
+    transform: translateY(-8px) rotateY(-2deg);
+    box-shadow: var(--glow), 0 30px 60px rgba(0,0,0,0.5);
+    border-color: rgba(0,245,255,0.4);
+  }
+  .project-card:hover::after { opacity: 1; }
+  .project-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(0,245,255,0.08);
+    position: absolute;
+    top: 16px; right: 24px;
+    line-height: 1;
+  }
+  .project-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--magenta);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-shadow: var(--glow-m);
+  }
+  .project-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+  .project-desc {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tech-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border: 1px solid rgba(0,245,255,0.2);
+    color: var(--cyan);
+    background: rgba(0,245,255,0.04);
+    text-transform: uppercase;
+  }
+
+  /* ─── EXPERIENCE ─── */
+  #experience { background: var(--bg2); }
+  .timeline {
+    position: relative;
+    padding-left: 48px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, var(--cyan), var(--purple), transparent);
+    box-shadow: 0 0 8px var(--cyan);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.6s;
+  }
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .timeline-dot {
+    position: absolute;
+    left: -52px; top: 6px;
+    width: 10px; height: 10px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: var(--glow);
+  }
+  .timeline-dot::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .job-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .job-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .job-company {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--magenta);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-shadow: var(--glow-m);
+  }
+  .job-bullets { list-style: none; }
+  .job-bullets li {
+    font-size: 0.95rem;
+    color: var(--text);
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+  .job-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--cyan);
+  }
+
+  /* ─── EDUCATION ─── */
+  #education { background: var(--bg); }
+  .edu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+  }
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .edu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--glow);
+    border-color: rgba(0,245,255,0.3);
+  }
+  .edu-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--cyan), var(--purple));
+    box-shadow: 0 0 10px var(--cyan);
+  }
+  .edu-year {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .edu-degree {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .edu-uni {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--magenta);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: var(--glow-m);
+  }
+
+  /* ─── CONTACT ─── */
+  #contact {
+    background: var(--bg2);
+    text-align: center;
+    align-items: center;
+  }
+  .contact-inner { max-width: 640px; }
+  .contact-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--dim);
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+    line-height: 1.8;
+  }
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .contact-link {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-decoration: none;
+    padding: 16px 32px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: all 0.3s;
+    text-transform: lowercase;
+  }
+  .contact-link:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: var(--glow);
+    text-shadow: var(--glow);
+  }
+  .contact-link .cl-icon {
+    width: 20px; height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+  .footer-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 80px;
+  }
+  .footer-note span { color: var(--cyan); }
+
+  /* ─── PARALLAX ELEMENTS ─── */
+  .parallax-layer {
+    position: absolute;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .floating-glyph {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: rgba(0,245,255,0.12);
+    text-transform: uppercase;
+    white-space: nowrap;
+    animation: float 6s ease-in-out infinite;
+  }
+  .neon-circle {
+    border-radius: 50%;
+    border: 1px solid;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.6; transform: scale(1.05); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33%       { transform: translateY(-12px) rotate(1deg); }
+    66%       { transform: translateY(6px) rotate(-1deg); }
+  }
+  @keyframes glitch {
+    0%, 100% { clip-path: none; transform: none; }
+    5%  { clip-path: inset(40% 0 60% 0); transform: translate(-4px); }
+    10% { clip-path: inset(60% 0 20% 0); transform: translate(4px); }
+    15% { clip-path: none; transform: none; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { box-shadow: var(--glow); }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 24px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 0.65rem; }
+    section { padding: 80px 6vw; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-visual { display: none; }
+    .hero-glitch { display: none; }
+    .about-stats { gap: 24px; }
+    body { cursor: auto; }
+    #cursor, #cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SL.DEV</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="parallax-layer floating-glyph" style="top:20%;left:2%;animation-delay:0s">INITIALISING PROFILE...</div>
+  <div class="parallax-layer floating-glyph" style="top:70%;left:4%;animation-delay:2s">DATA_DRIVEN • MISSION_FOCUSED</div>
+  <div class="parallax-layer neon-circle" style="width:500px;height:500px;border-color:rgba(0,245,255,0.04);top:-120px;right:-80px;animation-delay:1s"></div>
+  <div class="parallax-layer neon-circle" style="width:200px;height:200px;border-color:rgba(255,0,200,0.07);bottom:10%;right:20%;animation-delay:3s"></div>
+
+  <div class="hero-label">// PORTFOLIO v2.0 — LOADED</div>
+  <h1 class="hero-name">Shane<br><span>Lazar</span></h1>
+  <p class="hero-tagline">Senior Data Analyst &nbsp;|&nbsp; Software Developer &nbsp;|&nbsp; Data Engineer &nbsp;|&nbsp; Web Developer</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn">View Projects</a>
+    <a href="#contact" class="btn btn-ghost">Contact Me</a>
+  </div>
+
+  <div class="hero-glitch" aria-hidden="true">
+    <span style="font-family:'Orbitron',monospace;font-size:220px;font-weight:900;color:rgba(0,245,255,0.08);">SL</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header">
+    <div class="section-num">// 01</div>
+    <h2 class="section-title">About <em>Me</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-visual">
+      <div class="about-hex">
+        <div class="about-hex-inner">SL</div>
+      </div>
+    </div>
+    <div class="about-text">
+      <p>I am a data-driven professional with a background in Advanced Computer Science and hands-on experience in high-pressure operational environments.</p>
+      <p>I specialise in SQL, Python, and Power BI, with practical experience in data cleaning, transformation, and visualisation. I have built ETL pipelines, performed statistical analysis, and developed dashboards to turn raw data into actionable insights.</p>
+      <p>My experience in transport security and public-facing roles has strengthened my ability to work under pressure, communicate effectively with stakeholders, and manage real-time incidents — developing analytical thinking and problem-solving abilities in fast-paced environments.</p>
+      <p>I am particularly interested in Data Analyst roles within <strong style="color:var(--cyan)">healthcare</strong>, <strong style="color:var(--cyan)">public sector</strong>, and <strong style="color:var(--cyan)">mission-driven organisations</strong> where data can make a meaningful impact.</p>
+      <div class="about-stats">
+        <div class="stat">
+          <span class="stat-num">3+</span>
+          <span class="stat-label">Years Experience</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">5+</span>
+          <span class="stat-label">Projects Built</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">MSc</span>
+          <span class="stat-label">Comp. Science</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <div class="section-num">// 02</div>
+    <h2 class="section-title">Skills &amp; <em>Stack</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card" data-progress="0.9">
+      <div class="skill-icon">🗄️</div>
+      <div class="skill-name">SQL</div>
+      <div class="skill-desc">Data querying, joins, aggregations, complex analysis</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.85">
+      <div class="skill-icon">🐍</div>
+      <div class="skill-name">Python</div>
+      <div class="skill-desc">Pandas, NumPy, data analysis & automation</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.88">
+      <div class="skill-icon">📊</div>
+      <div class="skill-name">Power BI</div>
+      <div class="skill-desc">Dashboards, DAX, data visualisation</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:88%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.9">
+      <div class="skill-icon">📈</div>
+      <div class="skill-name">Excel</div>
+      <div class="skill-desc">Advanced functions, pivot tables, reporting</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.82">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-name">ETL Pipelines</div>
+      <div class="skill-desc">Data cleaning, transformation, integration</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:82%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.8">
+      <div class="skill-icon">📐</div>
+      <div class="skill-name">Statistical Analysis</div>
+      <div class="skill-desc">Hypothesis testing, predictive modelling</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.78">
+      <div class="skill-icon">🛠️</div>
+      <div class="skill-name">PHP Laravel</div>
+      <div class="skill-desc">Full-stack web application development</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:78%"></div></div>
+    </div>
+    <div class="skill-card" data-progress="0.75">
+      <div class="skill-icon">☁️</div>
+      <div class="skill-name">Groovy / Cloud</div>
+      <div class="skill-desc">Cloud architecture, automation scripting</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header">
+    <div class="section-num">// 03</div>
+    <h2 class="section-title">Selected <em>Projects</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-num">01</div>
+      <div class="project-tag">// Machine Learning</div>
+      <div class="project-title">Predictive Stock Market Analysis</div>
+      <p class="project-desc">Built a predictive model analysing market trends and historical data to forecast stock price movements. Involved feature engineering, statistical modelling, and data visualisation of financial time series.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">Pandas</span>
+        <span class="tech-tag">NumPy</span>
+        <span class="tech-tag">Statistical Modelling</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">02</div>
+      <div class="project-tag">// Cloud & Algorithms</div>
+      <div class="project-title">Scheduling Algorithms for Energy Efficiency</div>
+      <p class="project-desc">Designed and implemented cloud-aware scheduling algorithms to optimise energy consumption in cloud response systems. Evaluated algorithm performance across different load scenarios.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">Groovy</span>
+        <span class="tech-tag">Cloud Architecture</span>
+        <span class="tech-tag">Algorithm Design</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">03</div>
+      <div class="project-tag">// Systems Design</div>
+      <div class="project-title">Multi-Dispensary Project Management System</div>
+      <p class="project-desc">Designed a multidisciplinary project management system to improve team collaboration, communication, and agile execution across disciplines — spanning planning, task tracking, and real-time reporting.</p>
+      <div class="tech-tags">
+        <span class="tech-tag">PHP Laravel</span>
+        <span class="tech-tag">SQL</span>
+        <span class="tech-tag">Agile</span>
+        <span class="tech-tag">Systems Design</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <div class="section-num">// 04</div>
+    <h2 class="section-title">Work <em>Experience</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="job-date">February 2026 — Present</div>
+      <div class="job-title">Customer Service Officer</div>
+      <div class="job-company">Leicester City Council</div>
+      <ul class="job-bullets">
+        <li>Delivered high-quality public-facing services, handling complex queries across multiple council departments with clarity and professionalism.</li>
+        <li>Managed and escalated real-time incidents requiring rapid triage, data retrieval, and cross-departmental coordination.</li>
+        <li>Demonstrated strong stakeholder communication and case management skills in a fast-paced local government environment.</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="job-date">May 2025 — Present</div>
+      <div class="job-title">Security Officer</div>
+      <div class="job-company">Showsec International</div>
+      <ul class="job-bullets">
+        <li>Maintained safety and security at high-footfall public events, managing crowd dynamics and real-time threat assessment.</li>
+        <li>Coordinated with team leads and emergency services under time-critical conditions, applying structured problem-solving.</li>
+        <li>Developed strong situational awareness, reporting accuracy, and clear verbal communication under pressure.</li>
+      </ul>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="job-date">September 2022 — February 2023</div>
+      <div class="job-title">Senior Data Analyst</div>
+      <div class="job-company">Rapid Data Labs</div>
+      <ul class="job-bullets">
+        <li>Led data analysis projects including ETL pipeline development, data cleaning, and transformation across large datasets.</li>
+        <li>Produced Power BI dashboards and statistical reports that delivered actionable insights to stakeholders.</li>
+        <li>Conducted predictive analysis and trend modelling, directly informing business strategy and data-driven decision-making.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-header">
+    <div class="section-num">// 05</div>
+    <h2 class="section-title"><em>Education</em></h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-year">September 2023 — January 2025</div>
+      <div class="edu-degree">MSc Advanced Computer Science<br><span style="font-size:0.8rem;color:var(--dim);font-family:'Share Tech Mono',monospace">(Postgraduate Diploma awarded)</span></div>
+      <div class="edu-uni">University of Leicester</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">September 2020 — April 2023</div>
+      <div class="edu-degree">BSc Computer Application<br><span style="font-size:0.8rem;color:var(--dim);font-family:'Share Tech Mono',monospace">(Computer Science)</span></div>
+      <div class="edu-uni">St Xavier's College, Ahmedabad</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-header" style="text-align:center;align-items:center">
+      <div class="section-num">// 06</div>
+      <h2 class="section-title">Get In <em>Touch</em></h2>
+      <div class="section-line" style="margin:20px auto 0"></div>
+    </div>
+    <p class="contact-sub">
+      Open to Data Analyst, Data Engineer, and Software Developer opportunities — particularly in healthcare, public sector, and mission-driven organisations. Let's connect.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:lazarshane21@gmail.com" class="contact-link">
+        <svg class="cl-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        lazarshane21@gmail.com
+      </a>
+      <a href="https://www.linkedin.com/in/shane-lazar" target="_blank" rel="noopener" class="contact-link">
+        <svg class="cl-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+        linkedin.com/in/shane-lazar
+      </a>
+      <a href="https://github.com/shanelazar" target="_blank" rel="noopener" class="contact-link">
+        <svg class="cl-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        github.com/shanelazar
+      </a>
+    </div>
+    <a href="mailto:lazarshane21@gmail.com" class="btn">Send a Message</a>
+    <p class="footer-note">Designed &amp; built by <span>Shane Lazar</span> — 2025</p>
+  </div>
+</section>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a,button,.skill-card,.project-card,.edu-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; ring.style.borderColor = 'rgba(255,0,200,0.6)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.borderColor = 'rgba(0,245,255,0.5)'; });
+  });
+
+  // Parallax on scroll
+  const parallaxEls = document.querySelectorAll('.parallax-layer');
+  window.addEventListener('scroll', () => {
+    const sy = window.scrollY;
+    parallaxEls.forEach((el, i) => {
+      const speed = (i % 2 === 0) ? 0.25 : 0.15;
+      el.style.transform = `translateY(${sy * speed}px)`;
+    });
+  });
+
+  // Skill bar animation
+  const bars = document.querySelectorAll('.skill-bar');
+  const skillObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('animate'); });
+  }, { threshold: 0.3 });
+  bars.forEach(b => skillObs.observe(b));
+
+  // Timeline fade-in
+  const timelineItems = document.querySelectorAll('.timeline-item');
+  const tlObs = new IntersectionObserver(entries => {
+    entries.forEach((e, idx) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), idx * 100);
+      }
+    });
+  }, { threshold: 0.2 });
+  timelineItems.forEach(t => tlObs.observe(t));
+
+  // Section reveal animations
+  const revealSections = document.querySelectorAll('.section-header, .about-text, .about-visual, .project-card, .edu-card');
+  const revObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'fadeUp 0.8s forwards';
+      }
+    });
+  }, { threshold: 0.15 });
+  revealSections.forEach(s => { s.style.opacity = '0'; revObs.observe(s); });
+
+  // Active nav link highlighting
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.style.color = '');
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (active) active.style.color = 'var(--cyan)';
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>
